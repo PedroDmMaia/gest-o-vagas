@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.pedromaia.gestao_vagas.exceptions.UserFoundException;
 import br.com.pedromaia.gestao_vagas.modules.candidates.CandidateEntity;
 import br.com.pedromaia.gestao_vagas.modules.candidates.CandidateRepository;
 
@@ -20,6 +21,11 @@ public class CandidateContrller {
 
   @PostMapping("/")
   public CandidateEntity create(@Valid @RequestBody CandidateEntity candidate) {
+    this.candidateRepository.findByUsernameOrEmail(candidate.getUsername(), candidate.getEmail()).ifPresent((user) -> {
+      throw new UserFoundException();
+    });
+
+    
     return this.candidateRepository.save(candidate);
   }
 }
